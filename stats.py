@@ -4,6 +4,7 @@ from scipy import stats
 import pandas as pd
 
 # READ IN DATA
+# NEXT
 
 data = '''Region, Alcohol, Tobacco
 North, 6.47, 4.03
