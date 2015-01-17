@@ -18,7 +18,6 @@ with con:
 	cur.execute("DROP TABLE IF EXISTS weather;")
 	cur.execute("DROP TABLE IF EXISTS cities;")
 
-# NEXT
 # CREATE & LOAD CITIES
 	cur.execute("CREATE TABLE cities(name text, state text)")
 	cur.execute("INSERT INTO cities VALUES ('New York City', 'NY')")
