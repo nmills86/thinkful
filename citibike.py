@@ -85,6 +85,7 @@ con = lite.connect('citi_bike.db')
 cur = con.cursor()
 
 for i in range(60):
+    print i
     r = requests.get('http://www.citibikenyc.com/stations/json')
     exec_time = parse(r.json()['executionTime'])
 
