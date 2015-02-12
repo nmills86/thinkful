@@ -3,6 +3,7 @@ import requests
 import sqlite3 as lite
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 url = "http://web.archive.org/web/20110514112442/http://unstats.un.org/unsd/demographic/products/socind/education.htm"
@@ -80,21 +81,19 @@ df3 = pd.melt(df2, id_vars=['country_name', 'male_exp', 'female_exp', 'year'], v
 df3['gdp_year']=df3['gdp_year'].map(lambda x: int(x[1:]))
 # ONLY KEEP ROWS WHERE GDP YEAR = EXPECTANCY YEAR
 df4=df3[df3.year==df3.gdp_year]
-df5=df4.dropna(subset=['gdp'], how='all')
+# FILTER OUT BLANK ROWS 
+df5=df4[df4.gdp!='']
+df5['gdp']=df5['gdp'].map(lambda x: float(x))
 
-df4['gdp'].fillna('missing')
 
-
-#EXTRACT DATA
-df4['gdp'].apply(np.float32)
-log_gdp=(df4['gdp'])
-log_gdp=math.log(float(log_gdp))
-m_exp=df4['male_exp']
-f_exp=df4['female_exp']
+log_gdp=(df5['gdp'])
+log_gdp=np.log((log_gdp))
+m_exp=df5['male_exp']
+f_exp=df5['female_exp']
 
 
 y=np.matrix(log_gdp).transpose()
-x1=np.matrx(m_exp).transpose()
+x1=np.matrix(m_exp).transpose()
 x2=np.matrix(f_exp).transpose()
 
 X1=sm.add_constant(x1)
@@ -105,26 +104,21 @@ model = sm.OLS(y,X1)
 f = model.fit()
 
 # PRINT OUT RESULTS
-print 'Coefficients: ', f.params[0:2]
-print 'Intercept: ', f.params[2]
-print 'P-Values: ', f.pvalues
-print 'R-Squared: ', f.rsquared
+print 'Coefficients: , Male', f.params[0:2]
+print 'P-Values: , Male', f.pvalues
+print 'R-Squared: , Male', f.rsquared
+
 
 # RUN THE MODEL, and EXTRACT FIT STATISTICS, FEMALE
 model = sm.OLS(y,X2)
 f = model.fit()
 
 # PRINT OUT RESULTS
-print 'Coefficients: ', f.params[0:2]
-print 'Intercept: ', f.params[2]
-print 'P-Values: ', f.pvalues
-print 'R-Squared: ', f.rsquared
+print 'Coefficients: , Female', f.params[0:2]
+print 'P-Values: , Female', f.pvalues
+print 'R-Squared: , Female', f.rsquared
 
-
-
-
-
-
-
-
+# For the countries where GDP is available, there appears to be a statistically significant relationship between year
+# of education and GDP. For males, a one year increase in education is associated with an average increase in GDP of 0.4 percent, 
+# for females, it's 0.5 percent. There is a moderate positive correlation between these variables (0.46 & 0.49, respectively)
 
